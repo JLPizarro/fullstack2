@@ -1,0 +1,658 @@
+/* =========================================================================
+   Consorcio San Antonio Transportes — hoja de estilos propia
+   Se apoya en Bootstrap 5.3 para grid/formularios/componentes base, pero
+   toda la identidad visual (colores, tipografía, layout de la plataforma,
+   tarjetas, sidebar, video) se define acá.
+   Paleta tomada de la marca real del sistema (azul primario / verde acento).
+   ========================================================================= */
+
+:root {
+  --brand-blue: #3969d0;
+  --brand-blue-dark: #20489d;
+  --brand-blue-light: #eff3fa;
+  --brand-blue-soft: #e0e7f5;
+  --brand-green: #3bc48d;
+  --brand-green-dark: #1e7653;
+  --brand-green-soft: #dbf0e8;
+  --brand-surface: #ecedf1;
+  --brand-text: #1e232f;
+  --brand-muted: #697286;
+  --brand-border: #d4d7de;
+  --sidebar-width: 236px;
+  --topbar-height: 64px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+
+  /* Overrides sobre las variables de Bootstrap para que TODOS sus
+     componentes (botones, focus rings, links, badges) usen la marca. */
+  --bs-primary: var(--brand-blue);
+  --bs-primary-rgb: 57, 105, 208;
+  --bs-success: var(--brand-green-dark);
+  --bs-success-rgb: 30, 118, 83;
+  --bs-body-color: var(--brand-text);
+  --bs-body-bg: var(--brand-surface);
+  --bs-link-color: var(--brand-blue);
+  --bs-link-hover-color: var(--brand-blue-dark);
+  --bs-border-radius: var(--radius-md);
+  --bs-border-radius-lg: var(--radius-lg);
+  --bs-font-sans-serif: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--brand-surface);
+  color: var(--brand-text);
+}
+
+a {
+  text-decoration: none;
+}
+
+.text-muted-brand {
+  color: var(--brand-muted) !important;
+}
+
+.btn-primary {
+  background-color: var(--brand-blue);
+  border-color: var(--brand-blue);
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--brand-blue-dark);
+  border-color: var(--brand-blue-dark);
+}
+
+.btn-success {
+  background-color: var(--brand-green-dark);
+  border-color: var(--brand-green-dark);
+}
+.btn-success:hover,
+.btn-success:focus {
+  background-color: var(--brand-green);
+  border-color: var(--brand-green);
+}
+
+.btn-outline-primary {
+  color: var(--brand-blue);
+  border-color: var(--brand-blue);
+}
+.btn-outline-primary:hover {
+  background-color: var(--brand-blue);
+  border-color: var(--brand-blue);
+}
+
+/* =========================================================================
+   Layout de plataforma: sidebar fija + topbar + contenido
+   ========================================================================= */
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+}
+
+.app-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: linear-gradient(180deg, var(--brand-blue-dark) 0%, #16305f 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+  transition: transform 0.25s ease;
+}
+
+.app-sidebar .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.1rem 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.app-sidebar .brand img {
+  height: 34px;
+}
+
+.app-sidebar .brand strong {
+  font-size: 0.95rem;
+  line-height: 1.15;
+  display: block;
+}
+
+.app-sidebar .brand small {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.72rem;
+}
+
+.app-sidebar nav {
+  flex: 1;
+  padding: 0.75rem 0.6rem;
+  overflow-y: auto;
+}
+
+.app-sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.78);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.9rem;
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.app-sidebar .nav-link i {
+  font-size: 1.05rem;
+  width: 1.2rem;
+  text-align: center;
+}
+
+.app-sidebar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.app-sidebar .nav-link.active {
+  background: var(--brand-blue);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(57, 105, 208, 0.45);
+}
+
+/* Grupos de módulo del sidebar (Mantención, RR.LL., Facturación, Operaciones),
+   con <details>/<summary> nativo — sin JS ni bundle de Bootstrap. */
+.app-sidebar .nav-group {
+  margin-bottom: 0.2rem;
+}
+
+.app-sidebar .nav-group summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.app-sidebar .nav-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.app-sidebar .nav-group summary:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.app-sidebar .nav-group summary i.bi-truck,
+.app-sidebar .nav-group summary i.bi-people,
+.app-sidebar .nav-group summary i.bi-receipt,
+.app-sidebar .nav-group summary i.bi-signpost-split {
+  font-size: 1.05rem;
+  width: 1.2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.app-sidebar .nav-group summary .chevron {
+  margin-left: auto;
+  transition: transform 0.15s ease;
+  font-size: 0.85rem;
+}
+
+.app-sidebar .nav-group[open] summary .chevron {
+  transform: rotate(180deg);
+}
+
+.app-sidebar .nav-group .nav-link {
+  padding-left: 1.5rem;
+  font-size: 0.86rem;
+}
+
+.app-sidebar .sidebar-footer {
+  padding: 0.9rem 1.1rem 1.2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.app-sidebar .sidebar-footer a {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.app-sidebar .sidebar-footer a:hover {
+  color: #fff;
+}
+
+.app-main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-topbar {
+  height: var(--topbar-height);
+  background: #fff;
+  border-bottom: 1px solid var(--brand-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.app-topbar .page-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.app-topbar .user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.app-topbar .user-chip img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--brand-blue-soft);
+}
+
+.app-content {
+  padding: 1.75rem;
+  flex: 1;
+}
+
+.sidebar-toggle {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+  }
+  .app-sidebar.open {
+    transform: translateX(0);
+  }
+  .app-main {
+    margin-left: 0;
+  }
+  .sidebar-toggle {
+    display: inline-flex;
+  }
+}
+
+/* =========================================================================
+   Tarjetas KPI del dashboard
+   ========================================================================= */
+
+.kpi-card {
+  border: 1px solid var(--brand-border);
+  border-left: 4px solid var(--brand-blue);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  padding: 1.15rem 1.3rem;
+  height: 100%;
+}
+
+.kpi-card.kpi-green {
+  border-left-color: var(--brand-green-dark);
+}
+
+.kpi-card .kpi-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-blue-light);
+  color: var(--brand-blue);
+  font-size: 1.2rem;
+}
+
+.kpi-card.kpi-green .kpi-icon {
+  background: var(--brand-green-soft);
+  color: var(--brand-green-dark);
+}
+
+.kpi-card .kpi-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* =========================================================================
+   Video tutorial embebido
+   ========================================================================= */
+
+.video-frame {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(30, 35, 47, 0.12);
+  background: #000;
+}
+
+.video-frame video {
+  width: 100%;
+  display: block;
+  max-height: 360px;
+  background: #000;
+}
+
+/* =========================================================================
+   Tarjetas de listados (flota / usuarios)
+   ========================================================================= */
+
+.entity-card {
+  border: 1px solid var(--brand-border);
+  border-radius: var(--radius-lg);
+  background: #fff;
+  overflow: hidden;
+  height: 100%;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.entity-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(30, 35, 47, 0.1);
+}
+
+.entity-card img.entity-thumb {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  background: var(--brand-blue-light);
+}
+
+.entity-card .entity-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.badge-estado {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.search-bar {
+  position: relative;
+}
+
+.search-bar i {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--brand-muted);
+}
+
+.search-bar input {
+  padding-left: 2.3rem;
+}
+
+/* =========================================================================
+   Formularios: feedback personalizado
+   ========================================================================= */
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.form-hint {
+  font-size: 0.8rem;
+  color: var(--brand-muted);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand-blue);
+  box-shadow: 0 0 0 0.2rem rgba(57, 105, 208, 0.18);
+}
+
+.invalid-feedback {
+  font-weight: 500;
+}
+
+.valid-feedback {
+  font-weight: 500;
+  color: var(--brand-green-dark);
+}
+
+.form-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-muted);
+  margin-bottom: 0.75rem;
+}
+
+/* Grupo de checkboxes en "chip" (categorías, tipos de carga, días de semana) */
+.chip-check {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip-check .form-check {
+  border: 1px solid var(--brand-border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem 0.35rem 2rem;
+  margin: 0;
+  background: #fff;
+}
+
+.chip-check .form-check-input:checked ~ .form-check-label {
+  color: var(--brand-blue-dark);
+  font-weight: 600;
+}
+
+.chip-check .form-check-input {
+  margin-left: -1.5rem;
+}
+
+/* Bloque que se muestra/oculta según un switch u opción (ej. "¿Es exclusivo?",
+   "¿Certificado Scania?", campos según motivo de viaje). */
+.conditional-section {
+  border: 1px dashed var(--brand-border);
+  border-radius: var(--radius-md);
+  background: var(--brand-blue-light);
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.form-check.form-switch .form-check-input {
+  width: 2.4rem;
+  height: 1.3rem;
+}
+
+/* Filas dinámicas (ej. turnos de un cliente): agregar/quitar filas de formulario. */
+.dynamic-row {
+  border: 1px solid var(--brand-border);
+  border-radius: var(--radius-md);
+  padding: 0.9rem;
+  margin-bottom: 0.75rem;
+  background: #fff;
+  position: relative;
+}
+
+.dynamic-row .btn-quitar-fila {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+/* Modales de alta/edición y fichas (todas las entidades pasan por aquí) */
+.modal-content {
+  border-radius: var(--radius-lg);
+  border: none;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.modal-header .modal-title {
+  font-weight: 700;
+}
+
+/* =========================================================================
+   Pestañas dentro de una ficha (Cliente: Datos/Contratos/Solicitudes;
+   Contrato: Datos/Rutas; Viaje: Resumen/Tramos/Gastos/Transferencias)
+   ========================================================================= */
+
+.tabs-nav {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--brand-border);
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tabs-nav button {
+  border: none;
+  background: none;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--brand-muted);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tabs-nav button:hover {
+  color: var(--brand-text);
+}
+
+.tabs-nav button.active {
+  color: var(--brand-blue);
+  border-bottom-color: var(--brand-blue);
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+/* Ficha anidada (ej. ficha de Contrato abierta desde la ficha de Cliente): mismo look que
+   .entity-card pero sin sombra propia, para no "flotar" doblemente dentro del modal padre. */
+.nested-card {
+  border: 1px solid var(--brand-border);
+  border-radius: var(--radius-md);
+  background: #fff;
+  padding: 1rem;
+}
+
+/* Tabla simple de solo lectura (Gastos, Tramos, Transferencias dentro de una ficha) */
+.mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.mini-table th {
+  text-align: left;
+  color: var(--brand-muted);
+  font-weight: 600;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.mini-table td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.mini-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Aviso "comparte tracto con..." en Preasignación */
+.chip-nota {
+  display: inline-block;
+  font-size: 0.72rem;
+  color: var(--brand-blue-dark);
+  background: var(--brand-blue-light);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  margin-top: 0.25rem;
+}
+
+/* =========================================================================
+   Pantalla de login (fuera del app-shell)
+   ========================================================================= */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--brand-blue-light) 0%, var(--brand-surface) 60%);
+  padding: 1.5rem;
+}
+
+.auth-card {
+  max-width: 940px;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 20px 45px rgba(30, 35, 47, 0.14);
+}
+
+.auth-illustration {
+  background: var(--brand-blue-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-illustration img {
+  max-width: 100%;
+}
+
+.auth-form-side {
+  background: #fff;
+  padding: 2.75rem 2.5rem;
+}
+
+/* =========================================================================
+   Utilidades generales
+   ========================================================================= */
+
+.site-footer {
+  border-top: 1px solid var(--brand-border);
+  padding: 1rem 1.75rem;
+  font-size: 0.82rem;
+  color: var(--brand-muted);
+}
+
+.section-heading {
+  font-weight: 700;
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

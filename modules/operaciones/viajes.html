@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Viajes · Consorcio San Antonio Transportes</title>
+  <meta name="description" content="Viajes de carga para clientes y traslados de gestión interna del Consorcio San Antonio Transportes.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body data-page-title="Viajes" data-base="../../" data-pagina="viajes">
+
+  <div class="app-shell" id="app-shell">
+    <div class="app-main">
+      <main class="app-content" id="app-content">
+
+        <section class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+          <div>
+            <h1 class="h4 mb-1">Viajes</h1>
+            <p class="text-muted-brand mb-0">Todos los viajes registrados, con su estado actual.</p>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <div class="search-bar" style="min-width:220px;">
+              <i class="bi bi-search"></i>
+              <input type="search" id="buscador" class="form-control" placeholder="Buscar por código, estado..." autocomplete="off" aria-label="Buscar viaje">
+            </div>
+            <button type="button" class="btn btn-primary text-nowrap" id="btn-nuevo-viaje"><i class="bi bi-geo-alt me-1"></i>Añadir viaje</button>
+          </div>
+        </section>
+
+        <div class="table-responsive">
+          <table class="table align-middle bg-white rounded-4 overflow-hidden">
+            <thead class="table-light"><tr><th>Código</th><th>Chofer</th><th>Vehículo</th><th>Prioridad</th><th>Estado</th></tr></thead>
+            <tbody id="lista-viajes"></tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal: ficha de viaje (Resumen / Tramos / Gastos / Transferencias) -->
+  <div class="modal fade" id="modal-ficha-viaje" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="ficha-viaje-modal-titulo">Ficha del viaje</h2>
+          <button type="button" class="btn-close" data-cerrar-modal="modal-ficha-viaje" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="ficha-viaje-modal-cuerpo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: alta/edición de viaje -->
+  <div class="modal fade" id="modal-viaje" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <form id="form-viaje" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modal-viaje-titulo">Añadir viaje</h2>
+            <button type="button" class="btn-close" data-cerrar-modal="modal-viaje" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p class="form-section-title">Motivo del viaje</p>
+            <div class="d-flex gap-4 mb-2">
+              <div class="form-check"><input class="form-check-input" type="radio" name="motivo" id="vi-motivoCargaCliente"><label class="form-check-label" for="vi-motivoCargaCliente">Carga de cliente</label></div>
+              <div class="form-check"><input class="form-check-input" type="radio" name="motivo" id="vi-motivoGestionInterna"><label class="form-check-label" for="vi-motivoGestionInterna">Gestión interna</label></div>
+            </div>
+
+            <div id="vi-seccion-carga-cliente" class="conditional-section mb-3">
+              <label for="vi-trayectoId" class="form-label">Ruta</label>
+              <select class="form-select" id="vi-trayectoId"><option value="" selected disabled>Selecciona una ruta</option></select>
+              <div class="invalid-feedback"></div>
+            </div>
+            <div id="vi-seccion-gestion-interna" class="conditional-section mb-3 d-none">
+              <label for="vi-motivoInterno" class="form-label">Motivo interno</label>
+              <input type="text" class="form-control" id="vi-motivoInterno" maxlength="200">
+              <div class="invalid-feedback"></div>
+            </div>
+
+            <p class="form-section-title mt-2">Equipo y personal</p>
+            <div class="row">
+              <div class="col-md-6 mb-3"><label for="vi-choferId" class="form-label">Chofer</label><select class="form-select" id="vi-choferId"><option value="" selected disabled>Selecciona un chofer</option></select><div class="invalid-feedback"></div></div>
+              <div class="col-md-6 mb-3"><label for="vi-coordinadorId" class="form-label">Coordinador</label><select class="form-select" id="vi-coordinadorId"><option value="" selected disabled>Selecciona un coordinador</option></select><div class="invalid-feedback"></div></div>
+              <div class="col-md-4 mb-3"><label for="vi-vehiculoId" class="form-label">Vehículo</label><select class="form-select" id="vi-vehiculoId"><option value="" selected disabled>Selecciona un vehículo</option></select><div class="invalid-feedback"></div></div>
+              <div class="col-md-4 mb-3">
+                <label for="vi-funcionVehiculo" class="form-label">Función del vehículo</label>
+                <select class="form-select" id="vi-funcionVehiculo"><option value="" selected disabled>Selecciona una función</option><option value="Tracto">Tracto</option><option value="Apoyo">Apoyo</option></select>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-md-4 mb-3"><label for="vi-ramplaId" class="form-label">Rampla</label><select class="form-select" id="vi-ramplaId"><option value="">Sin rampla</option></select></div>
+            </div>
+
+            <p class="form-section-title mt-2">Detalle del viaje</p>
+            <div class="row">
+              <div class="col-md-4 mb-3"><label for="vi-prioridad" class="form-label">Prioridad</label><select class="form-select" id="vi-prioridad"><option value="" selected disabled>Selecciona</option></select><div class="invalid-feedback"></div></div>
+              <div class="col-md-4 mb-3"><label for="vi-tonelajeRequerido" class="form-label">Tonelaje requerido</label><input type="number" min="0" max="200" class="form-control" id="vi-tonelajeRequerido"></div>
+              <div class="col-md-4 mb-3"><label for="vi-numeroContacto" class="form-label">N° de contacto</label><input type="tel" class="form-control" id="vi-numeroContacto" placeholder="+56 9 5511 2233"><div class="invalid-feedback"></div></div>
+              <div class="col-md-4 mb-3"><label for="vi-fechaPresentacion" class="form-label">Fecha de presentación</label><input type="date" class="form-control" id="vi-fechaPresentacion"><div class="invalid-feedback"></div></div>
+              <div class="col-md-4 mb-3"><label for="vi-horaPresentacion" class="form-label">Hora de presentación</label><input type="time" class="form-control" id="vi-horaPresentacion"></div>
+              <div class="col-md-4 mb-3"><label for="vi-estado" class="form-label">Estado</label><select class="form-select" id="vi-estado"></select></div>
+              <div class="col-12 mb-3"><label for="vi-ubicacionCarga" class="form-label">Ubicación de carga</label><input type="text" class="form-control" id="vi-ubicacionCarga" maxlength="200"><div class="invalid-feedback"></div></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-cerrar-modal="modal-viaje">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/datos.js"></script>
+  <script src="../../js/validaciones.js"></script>
+  <script src="../../js/render.js"></script>
+  <script src="../../js/modal.js"></script>
+  <script src="../../js/entidades.js"></script>
+  <script src="../../js/pagina-generica.js"></script>
+  <script src="../../js/layout.js"></script>
+</body>
+</html>

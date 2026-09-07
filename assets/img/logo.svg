@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 56" role="img" aria-label="Logo Consorcio San Antonio Transportes">
+  <rect x="0" y="4" width="48" height="48" rx="12" fill="#3969d0"/>
+  <g transform="translate(9,16)">
+    <rect x="0" y="10" width="22" height="12" rx="2" fill="#ffffff"/>
+    <rect x="22" y="14" width="9" height="8" rx="1.5" fill="#ffffff"/>
+    <circle cx="6" cy="24" r="3.4" fill="#1e232f"/>
+    <circle cx="24" cy="24" r="3.4" fill="#1e232f"/>
+    <rect x="24.5" y="15.5" width="4.5" height="3" fill="#3969d0"/>
+  </g>
+  <text x="58" y="26" font-family="Inter, Segoe UI, sans-serif" font-size="16" font-weight="700" fill="#1e232f">Consorcio SA</text>
+  <text x="58" y="42" font-family="Inter, Segoe UI, sans-serif" font-size="12" font-weight="500" fill="#697286">Transportes · Plataforma</text>
+</svg>

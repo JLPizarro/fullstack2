@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionar vehículos · Consorcio San Antonio Transportes</title>
+  <meta name="description" content="Flota completa (vehículos y ramplas) del Consorcio San Antonio Transportes.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body data-page-title="Gestionar vehículos" data-base="../../" data-pagina="vehiculos">
+
+  <div class="app-shell" id="app-shell">
+    <div class="app-main">
+      <main class="app-content" id="app-content">
+
+        <section class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+          <div>
+            <h1 class="h4 mb-1">Gestionar vehículos</h1>
+            <p class="text-muted-brand mb-0">Flota completa: tractos, camionetas, furgones y ramplas, en una sola tabla.</p>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <div class="search-bar" style="min-width:220px;">
+              <i class="bi bi-search"></i>
+              <input type="search" id="buscador" class="form-control" placeholder="Buscar por patente..." autocomplete="off" aria-label="Buscar equipo">
+            </div>
+            <button type="button" class="btn btn-outline-primary text-nowrap" id="btn-nueva-rampla"><i class="bi bi-box-seam me-1"></i>Nueva rampla</button>
+            <button type="button" class="btn btn-primary text-nowrap" id="btn-nuevo-vehiculo"><i class="bi bi-truck me-1"></i>Nuevo vehículo</button>
+          </div>
+        </section>
+
+        <div class="table-responsive">
+          <table class="table align-middle bg-white rounded-4 overflow-hidden" id="tabla-equipos">
+            <thead class="table-light">
+              <tr><th>Patente</th><th>Tipo</th><th>Detalle</th><th>Año</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="lista-equipos"></tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal: ficha (vehículo o rampla, según la fila) -->
+  <div class="modal fade" id="modal-ficha" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="ficha-modal-titulo">Ficha</h2>
+          <button type="button" class="btn-close" data-cerrar-modal="modal-ficha" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="ficha-modal-cuerpo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: alta/edición de vehículo -->
+  <div class="modal fade" id="modal-vehiculo" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <form id="form-vehiculo" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modal-vehiculo-titulo">Añadir vehículo</h2>
+            <button type="button" class="btn-close" data-cerrar-modal="modal-vehiculo" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="v-patente" class="form-label">Patente</label>
+                <input type="text" class="form-control" id="v-patente" maxlength="8" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="v-estado" class="form-label">Estado</label>
+                <select class="form-select" id="v-estado" required>
+                  <option value="" selected disabled>Selecciona un estado</option>
+                  <option value="Operativo">Operativo</option>
+                  <option value="En mantención">En mantención</option>
+                  <option value="Fuera de servicio">Fuera de servicio</option>
+                </select>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="v-marca" class="form-label">Marca</label>
+                <input type="text" class="form-control" id="v-marca" maxlength="50" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="v-modelo" class="form-label">Modelo</label>
+                <input type="text" class="form-control" id="v-modelo" maxlength="50" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="v-anio" class="form-label">Año</label>
+                <input type="number" class="form-control" id="v-anio" min="1980" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="v-conductor" class="form-label">Conductor asignado</label>
+                <input type="text" class="form-control" id="v-conductor" placeholder="Opcional" maxlength="100">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="v-ramplaAsignadaId" class="form-label">Rampla asignada</label>
+                <select class="form-select" id="v-ramplaAsignadaId">
+                  <option value="">Sin rampla asignada</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-cerrar-modal="modal-vehiculo">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: alta/edición de rampla -->
+  <div class="modal fade" id="modal-rampla" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-rampla" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modal-rampla-titulo">Añadir rampla</h2>
+            <button type="button" class="btn-close" data-cerrar-modal="modal-rampla" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label for="r-patente" class="form-label">Patente</label>
+                <input type="text" class="form-control" id="r-patente" maxlength="8" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="r-codigo" class="form-label">Código</label>
+                <input type="text" class="form-control" id="r-codigo" maxlength="8" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-4 mb-3">
+                <label for="r-anio" class="form-label">Año</label>
+                <input type="number" class="form-control" id="r-anio" min="1980" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-4 mb-3">
+                <label for="r-ejes" class="form-label">Ejes</label>
+                <input type="number" class="form-control" id="r-ejes" min="1" max="12" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-4 mb-3 d-flex align-items-end">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="r-certificada">
+                  <label class="form-check-label" for="r-certificada">Certificada</label>
+                </div>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="r-fechaVencimientoRevisionTecnica" class="form-label">Vence revisión técnica</label>
+                <input type="date" class="form-control" id="r-fechaVencimientoRevisionTecnica" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="r-vencimientoPermisoCirculacion" class="form-label">Vence permiso circulación</label>
+                <input type="date" class="form-control" id="r-vencimientoPermisoCirculacion" required>
+                <div class="invalid-feedback"></div>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="r-vencimientoSoap" class="form-label">Vence SOAP</label>
+                <input type="date" class="form-control" id="r-vencimientoSoap" required>
+                <div class="invalid-feedback"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-cerrar-modal="modal-rampla">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/datos.js"></script>
+  <script src="../../js/validaciones.js"></script>
+  <script src="../../js/render.js"></script>
+  <script src="../../js/modal.js"></script>
+  <script src="../../js/entidades.js"></script>
+  <script src="../../js/pagina-generica.js"></script>
+  <script src="../../js/layout.js"></script>
+</body>
+</html>

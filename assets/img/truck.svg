@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-label="Ilustración de vehículo de flota">
+  <rect x="0" y="0" width="320" height="200" fill="#eff3fa"/>
+  <rect x="0" y="150" width="320" height="50" fill="#e0e7f5"/>
+  <g transform="translate(46,58)">
+    <rect x="0" y="34" width="150" height="66" rx="8" fill="#3969d0"/>
+    <rect x="12" y="46" width="126" height="20" rx="3" fill="#ffffff" opacity="0.85"/>
+    <rect x="150" y="50" width="56" height="50" rx="6" fill="#20489d"/>
+    <rect x="160" y="58" width="26" height="20" rx="2" fill="#c1ceeb"/>
+    <circle cx="36" cy="108" r="17" fill="#1e232f"/>
+    <circle cx="36" cy="108" r="6.5" fill="#8d94a5"/>
+    <circle cx="176" cy="108" r="17" fill="#1e232f"/>
+    <circle cx="176" cy="108" r="6.5" fill="#8d94a5"/>
+  </g>
+</svg>

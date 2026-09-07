@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Miniatura del video tutorial de la plataforma">
+  <defs>
+    <linearGradient id="posterGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#20489d"/>
+      <stop offset="100%" stop-color="#1e7653"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#posterGrad)"/>
+  <circle cx="320" cy="150" r="46" fill="#ffffff" opacity="0.92"/>
+  <path d="M306 128 L346 150 L306 172 Z" fill="#1e232f"/>
+  <text x="320" y="240" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="22" font-weight="700" fill="#ffffff">Video tutorial de la plataforma</text>
+  <text x="320" y="268" text-anchor="middle" font-family="Inter, Segoe UI, sans-serif" font-size="14" fill="#e0e7f5">Cómo usar el módulo de flota y usuarios</text>
+</svg>

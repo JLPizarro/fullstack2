@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionar personal · Consorcio San Antonio Transportes</title>
+  <meta name="description" content="Dotación registrada en Relaciones Laborales del Consorcio San Antonio Transportes.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body data-page-title="Gestionar personal" data-base="../../" data-pagina="personal">
+
+  <div class="app-shell" id="app-shell">
+    <div class="app-main">
+      <main class="app-content" id="app-content">
+
+        <section class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+          <div>
+            <h1 class="h4 mb-1">Gestionar personal</h1>
+            <p class="text-muted-brand mb-0">Dotación registrada en Relaciones Laborales.</p>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <div class="search-bar" style="min-width:220px;">
+              <i class="bi bi-search"></i>
+              <input type="search" id="buscador" class="form-control" placeholder="Buscar por RUN o nombre..." autocomplete="off" aria-label="Buscar empleado">
+            </div>
+            <button type="button" class="btn btn-outline-primary text-nowrap" id="btn-gestionar-turnos"><i class="bi bi-clock-history me-1"></i>Gestionar turnos</button>
+            <button type="button" class="btn btn-primary text-nowrap" id="btn-nuevo-empleado"><i class="bi bi-person-badge me-1"></i>Añadir empleado</button>
+          </div>
+        </section>
+
+        <article class="kpi-card kpi-green mb-4" style="max-width:280px;cursor:pointer;" id="btn-dotacion-hoy">
+          <span class="kpi-icon mb-2"><i class="bi bi-people"></i></span>
+          <div class="kpi-value" id="kpi-dotacion">0/0</div>
+          <div class="text-muted-brand small">Dotación de hoy — ver / marcar</div>
+        </article>
+
+        <div class="table-responsive">
+          <table class="table align-middle bg-white rounded-4 overflow-hidden">
+            <thead class="table-light">
+              <tr><th>RUN</th><th>Nombre completo</th><th>Cargo</th><th>Turno</th><th>Vehículo preasignado</th></tr>
+            </thead>
+            <tbody id="lista-empleados"></tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal: ficha de empleado -->
+  <div class="modal fade" id="modal-ficha-empleado" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="ficha-empleado-modal-titulo">Ficha del empleado</h2>
+          <button type="button" class="btn-close" data-cerrar-modal="modal-ficha-empleado" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="ficha-empleado-modal-cuerpo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: alta/edición de empleado -->
+  <div class="modal fade" id="modal-empleado" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <form id="form-empleado" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modal-empleado-titulo">Añadir empleado</h2>
+            <button type="button" class="btn-close" data-cerrar-modal="modal-empleado" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p class="form-section-title">Datos personales</p>
+            <div class="row">
+              <div class="col-md-6 mb-3"><label for="e-run" class="form-label">RUN</label><input type="text" class="form-control" id="e-run" placeholder="19011022K" maxlength="9" required><div class="invalid-feedback"></div></div>
+              <div class="col-md-6 mb-3"><label for="e-telefono" class="form-label">Teléfono</label><input type="tel" class="form-control" id="e-telefono" placeholder="+56 9 5511 2233" required><div class="invalid-feedback"></div></div>
+              <div class="col-md-4 mb-3"><label for="e-primerNombre" class="form-label">Primer nombre</label><input type="text" class="form-control" id="e-primerNombre" required><div class="invalid-feedback"></div></div>
+              <div class="col-md-4 mb-3"><label for="e-segundoNombre" class="form-label">Segundo nombre</label><input type="text" class="form-control" id="e-segundoNombre"></div>
+              <div class="col-md-4 mb-3"><label for="e-apellidoPaterno" class="form-label">Apellido paterno</label><input type="text" class="form-control" id="e-apellidoPaterno" required><div class="invalid-feedback"></div></div>
+              <div class="col-md-6 mb-3"><label for="e-apellidoMaterno" class="form-label">Apellido materno</label><input type="text" class="form-control" id="e-apellidoMaterno" required><div class="invalid-feedback"></div></div>
+              <div class="col-md-6 mb-3"><label for="e-fechaIngreso" class="form-label">Fecha de ingreso</label><input type="date" class="form-control" id="e-fechaIngreso" required><div class="invalid-feedback"></div></div>
+              <div class="col-md-6 mb-3"><label for="e-cargo" class="form-label">Cargo</label><select class="form-select" id="e-cargo" required><option value="" selected disabled>Selecciona un cargo</option></select><div class="invalid-feedback"></div></div>
+              <div class="col-md-6 mb-3"><label for="e-turnoId" class="form-label">Turno</label><select class="form-select" id="e-turnoId" required><option value="" selected disabled>Selecciona un turno</option></select><div class="invalid-feedback"></div></div>
+            </div>
+
+            <div id="e-seccion-conductor" class="conditional-section d-none">
+              <p class="form-section-title mb-2">Datos de conductor</p>
+              <div class="row">
+                <div class="col-md-6 mb-3"><label for="e-licenciaConducirVencimiento" class="form-label">Licencia vence</label><input type="date" class="form-control" id="e-licenciaConducirVencimiento"><div class="invalid-feedback"></div></div>
+                <div class="col-md-6 mb-3"></div>
+                <div class="col-md-3 mb-2 d-flex align-items-center"><div class="form-check"><input class="form-check-input" type="checkbox" id="e-certificadoScania"><label class="form-check-label" for="e-certificadoScania">Cert. Scania</label></div></div>
+                <div class="col-md-3 mb-2"><input type="date" class="form-control" id="e-vencimientoScania" placeholder="Vencimiento"></div>
+                <div class="col-md-3 mb-2 d-flex align-items-center"><div class="form-check"><input class="form-check-input" type="checkbox" id="e-certificadoMan"><label class="form-check-label" for="e-certificadoMan">Cert. MAN</label></div></div>
+                <div class="col-md-3 mb-2"><input type="date" class="form-control" id="e-vencimientoMan" placeholder="Vencimiento"></div>
+              </div>
+              <p class="form-section-title mt-2 mb-2">Tarjeta de rendición</p>
+              <div class="row">
+                <div class="col-md-4 mb-3"><label for="e-tarjetaRendicionBanco" class="form-label">Banco</label><select class="form-select" id="e-tarjetaRendicionBanco"><option value="" selected disabled>Selecciona un banco</option></select><div class="invalid-feedback"></div></div>
+                <div class="col-md-4 mb-3"><label for="e-tarjetaRendicionTipoCuenta" class="form-label">Tipo de cuenta</label><select class="form-select" id="e-tarjetaRendicionTipoCuenta"><option value="" selected disabled>Selecciona un tipo</option></select><div class="invalid-feedback"></div></div>
+                <div class="col-md-4 mb-3"><label for="e-tarjetaRendicionNumeroCuenta" class="form-label">N° de cuenta</label><input type="text" class="form-control" id="e-tarjetaRendicionNumeroCuenta"></div>
+                <div class="col-md-6 mb-3"><label for="e-tarjetaRendicionEmail" class="form-label">Correo</label><input type="email" class="form-control" id="e-tarjetaRendicionEmail"></div>
+                <div class="col-md-6 mb-3"><label for="e-tarjetaRendicionSaldo" class="form-label">Saldo inicial (CLP)</label><input type="number" min="0" class="form-control" id="e-tarjetaRendicionSaldo"></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-cerrar-modal="modal-empleado">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: gestionar turnos -->
+  <div class="modal fade" id="modal-turnos" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5">Gestionar turnos</h2>
+          <button type="button" class="btn-close" data-cerrar-modal="modal-turnos" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h3 class="h6 mb-0">Turnos existentes</h3>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="btn-nuevo-turno">Nuevo</button>
+              </div>
+              <div id="lista-turnos-modal" style="max-height:360px;overflow-y:auto;"></div>
+            </div>
+            <div class="col-md-6">
+              <h3 class="h6 mb-2" id="turno-form-titulo">Nuevo turno</h3>
+              <form id="form-turno" novalidate>
+                <input type="hidden" id="turno-id">
+                <div class="mb-2">
+                  <label for="turno-nombre" class="form-label small mb-1">Nombre</label>
+                  <input type="text" class="form-control form-control-sm" id="turno-nombre" maxlength="80" required>
+                  <div class="invalid-feedback"></div>
+                </div>
+                <div class="mb-2">
+                  <label for="turno-tipo" class="form-label small mb-1">Tipo</label>
+                  <select class="form-select form-select-sm" id="turno-tipo" required>
+                    <option value="" selected disabled>Selecciona un tipo</option>
+                    <option value="bloque_horario">Bloque horario</option>
+                    <option value="dias_semana">Días de la semana</option>
+                    <option value="rango_dias">Rango rotativo</option>
+                  </select>
+                </div>
+                <div class="row">
+                  <div class="col-6 mb-2"><label class="form-label small mb-1">Hora inicio</label><input type="time" class="form-control form-control-sm" id="turno-horaInicio" required></div>
+                  <div class="col-6 mb-2"><label class="form-label small mb-1">Hora término</label><input type="time" class="form-control form-control-sm" id="turno-horaTermino" required></div>
+                </div>
+                <div id="turno-seccion-dias" class="mb-2 d-none">
+                  <label class="form-label small mb-1 d-block">Días</label>
+                  <div class="chip-check" id="turno-dias-checkboxes"></div>
+                </div>
+                <div id="turno-seccion-rango" class="row d-none">
+                  <div class="col-4 mb-2"><label class="form-label small mb-1">Trabajo</label><input type="number" class="form-control form-control-sm" id="turno-diasTrabajo" min="1" max="365"></div>
+                  <div class="col-4 mb-2"><label class="form-label small mb-1">Descanso</label><input type="number" class="form-control form-control-sm" id="turno-diasDescanso" min="1" max="365"></div>
+                  <div class="col-4 mb-2"><label class="form-label small mb-1">Inicio ciclo</label><input type="date" class="form-control form-control-sm" id="turno-fechaInicioCiclo"></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm w-100 mt-2"><i class="bi bi-check2 me-1"></i>Guardar turno</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: dotación de hoy -->
+  <div class="modal fade" id="modal-dotacion" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5">Dotación de hoy</h2>
+          <button type="button" class="btn-close" data-cerrar-modal="modal-dotacion" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted-brand small mb-2" id="dotacion-resumen">—</p>
+          <div id="lista-dotacion" style="max-height:420px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/datos.js"></script>
+  <script src="../../js/validaciones.js"></script>
+  <script src="../../js/render.js"></script>
+  <script src="../../js/modal.js"></script>
+  <script src="../../js/entidades.js"></script>
+  <script src="../../js/pagina-generica.js"></script>
+  <script src="../../js/layout.js"></script>
+</body>
+</html>

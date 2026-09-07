@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes · Consorcio San Antonio Transportes</title>
+  <meta name="description" content="Clientes registrados en Facturación del Consorcio San Antonio Transportes.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body data-page-title="Clientes" data-base="../../" data-pagina="clientes">
+
+  <div class="app-shell" id="app-shell">
+    <div class="app-main">
+      <main class="app-content" id="app-content">
+
+        <section class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+          <div>
+            <h1 class="h4 mb-1">Clientes</h1>
+            <p class="text-muted-brand mb-0">Contratos, rutas y solicitudes de viaje viven dentro de la ficha de cada cliente.</p>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <div class="search-bar" style="min-width:220px;">
+              <i class="bi bi-search"></i>
+              <input type="search" id="buscador" class="form-control" placeholder="Buscar por nombre o RUT..." autocomplete="off" aria-label="Buscar cliente">
+            </div>
+            <button type="button" class="btn btn-primary text-nowrap" id="btn-nuevo-cliente"><i class="bi bi-building me-1"></i>Añadir cliente</button>
+          </div>
+        </section>
+
+        <div class="table-responsive">
+          <table class="table align-middle bg-white rounded-4 overflow-hidden">
+            <thead class="table-light"><tr><th>RUT</th><th>Nombre / Razón social</th><th>Abreviación</th><th>Categorías</th></tr></thead>
+            <tbody id="lista-clientes"></tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal: ficha de cliente (Datos / Contratos / Solicitudes de viaje) -->
+  <div class="modal fade" id="modal-ficha-cliente" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="ficha-cliente-modal-titulo">Ficha del cliente</h2>
+          <button type="button" class="btn-close" data-cerrar-modal="modal-ficha-cliente" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="ficha-cliente-modal-cuerpo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: alta/edición de cliente -->
+  <div class="modal fade" id="modal-cliente" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-cliente" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modal-cliente-titulo">Añadir cliente</h2>
+            <button type="button" class="btn-close" data-cerrar-modal="modal-cliente" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3"><label for="c-nombre" class="form-label">Nombre o razón social</label><input type="text" class="form-control" id="c-nombre" required><div class="invalid-feedback"></div></div>
+            <div class="row">
+              <div class="col-6 mb-3"><label for="c-abreviacion" class="form-label">Abreviación</label><input type="text" class="form-control" id="c-abreviacion" maxlength="12" required><div class="invalid-feedback"></div></div>
+              <div class="col-6 mb-3"><label for="c-rut" class="form-label">RUT</label><input type="text" class="form-control" id="c-rut" placeholder="12345678-9" required><div class="invalid-feedback"></div></div>
+            </div>
+            <label class="form-label d-block">Categorías</label>
+            <div class="chip-check mb-1" id="cliente-categorias"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-cerrar-modal="modal-cliente">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: alta/edición de contrato (anidado desde la pestaña Contratos) -->
+  <div class="modal fade" id="modal-contrato" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-contrato" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modal-contrato-titulo">Nuevo contrato</h2>
+            <button type="button" class="btn-close" data-cerrar-modal="modal-contrato" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3"><label for="co-nombre" class="form-label">Nombre o alias</label><input type="text" class="form-control" id="co-nombre" required><div class="invalid-feedback"></div></div>
+            <div class="row">
+              <div class="col-6 mb-3"><label for="co-fechaInicio" class="form-label">Fecha inicio</label><input type="date" class="form-control" id="co-fechaInicio" required></div>
+              <div class="col-6 mb-3"><label for="co-fechaTermino" class="form-label">Fecha término</label><input type="date" class="form-control" id="co-fechaTermino" required><div class="invalid-feedback"></div></div>
+            </div>
+            <label class="form-label d-block">Tipos de carga habilitados</label>
+            <div class="chip-check mb-3" id="contrato-tipos-carga"></div>
+
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input" type="checkbox" role="switch" id="co-exclusivo">
+              <label class="form-check-label" for="co-exclusivo">Contrato de exclusividad</label>
+            </div>
+            <div id="co-seccion-exclusivo" class="conditional-section mb-3 d-none">
+              <label for="co-cantidadVehiculosExclusividad" class="form-label">Cantidad de vehículos comprometidos</label>
+              <input type="number" min="1" class="form-control" id="co-cantidadVehiculosExclusividad">
+              <div class="form-hint mt-1">Los vehículos se asignan después, desde la pestaña Rutas/Exclusividad de la ficha.</div>
+            </div>
+
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input" type="checkbox" role="switch" id="co-tieneCompromiso">
+              <label class="form-check-label" for="co-tieneCompromiso">Tiene compromiso de volumen</label>
+            </div>
+            <div id="co-seccion-compromiso" class="conditional-section d-none">
+              <div class="d-flex gap-3 mb-2">
+                <div class="form-check"><input class="form-check-input" type="radio" name="tipoCompromiso" id="co-tipoCompromisoTonelaje"><label class="form-check-label" for="co-tipoCompromisoTonelaje">Por tonelaje</label></div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="tipoCompromiso" id="co-tipoCompromisoViajes"><label class="form-check-label" for="co-tipoCompromisoViajes">Por N° de viajes</label></div>
+              </div>
+              <div id="co-campo-toneladas" class="mb-2 d-none"><input type="number" min="0" class="form-control" id="co-toneladasComprometidas" placeholder="Toneladas comprometidas"></div>
+              <div id="co-campo-viajes" class="mb-2 d-none"><input type="number" min="0" class="form-control" id="co-viajesComprometidos" placeholder="Viajes comprometidos"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-cerrar-modal="modal-contrato">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: ficha de contrato (anidado, pestañas Datos / Rutas) -->
+  <div class="modal fade" id="modal-ficha-contrato" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="ficha-contrato-modal-titulo">Ficha del contrato</h2>
+          <button type="button" class="btn-close" data-cerrar-modal="modal-ficha-contrato" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="ficha-contrato-modal-cuerpo"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: agregar ruta (anidado desde la pestaña Rutas de la ficha de Contrato) -->
+  <div class="modal fade" id="modal-ruta" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form id="form-ruta" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modal-ruta-titulo">Agregar ruta</h2>
+            <button type="button" class="btn-close" data-cerrar-modal="modal-ruta" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3"><label for="ru-origen" class="form-label">Origen</label><input type="text" class="form-control" id="ru-origen" required><div class="invalid-feedback"></div></div>
+            <div class="mb-3"><label for="ru-destino" class="form-label">Destino</label><input type="text" class="form-control" id="ru-destino" required><div class="invalid-feedback"></div></div>
+            <div class="row">
+              <div class="col-6 mb-3"><label for="ru-duracionEstimadaMin" class="form-label">Duración estimada (min)</label><input type="number" min="1" class="form-control" id="ru-duracionEstimadaMin" required><div class="invalid-feedback"></div></div>
+              <div class="col-6 mb-3"><label for="ru-distanciaKm" class="form-label">Distancia (km)</label><input type="number" min="1" class="form-control" id="ru-distanciaKm" required><div class="invalid-feedback"></div></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-cerrar-modal="modal-ruta">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Guardar ruta</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: gestionar tarifas (anidado desde la pestaña Rutas) -->
+  <div class="modal fade" id="modal-tarifas" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5">Gestionar tarifas</h2>
+          <button type="button" class="btn-close" data-cerrar-modal="modal-tarifas" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div id="lista-tarifas-modal" style="max-height:280px;overflow-y:auto;" class="mb-3"></div>
+          <form id="form-tarifa" novalidate>
+            <p class="small fw-semibold mb-2" id="tarifa-form-titulo">Selecciona una ruta y tipo de carga para editar su tarifa</p>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" min="0" class="form-control" id="tarifa-monto" placeholder="Monto">
+              <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+            <div class="invalid-feedback"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: nueva solicitud de viaje (anidado desde la pestaña Solicitudes) -->
+  <div class="modal fade" id="modal-solicitud" tabindex="-1" aria-hidden="true" style="display:none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <form id="form-solicitud" novalidate>
+          <div class="modal-header">
+            <h2 class="modal-title h5" id="modal-solicitud-titulo">Nueva solicitud</h2>
+            <button type="button" class="btn-close" data-cerrar-modal="modal-solicitud" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6 mb-3"><label for="s-rutaId" class="form-label">Ruta</label><select class="form-select" id="s-rutaId" required><option value="" selected disabled>Selecciona una ruta</option></select><div class="invalid-feedback"></div></div>
+              <div class="col-md-6 mb-3"><label for="s-tipoCarga" class="form-label">Tipo de carga</label><select class="form-select" id="s-tipoCarga"><option value="" selected disabled>Selecciona un tipo</option></select></div>
+              <div class="col-md-4 mb-3"><label for="s-prioridad" class="form-label">Prioridad</label><select class="form-select" id="s-prioridad"><option value="" selected disabled>Selecciona</option></select></div>
+              <div class="col-md-4 mb-3"><label for="s-tonelajeRequerido" class="form-label">Tonelaje requerido</label><input type="number" min="0" max="200" class="form-control" id="s-tonelajeRequerido"></div>
+              <div class="col-md-4 mb-3"><label for="s-monto" class="form-label">Monto cotizado</label><input type="number" min="0" class="form-control" id="s-monto"></div>
+              <div class="col-md-6 mb-3"><label for="s-numeroContacto" class="form-label">Número de contacto</label><input type="tel" class="form-control" id="s-numeroContacto" placeholder="+56 9 5511 2233" required><div class="invalid-feedback"></div></div>
+              <div class="col-md-3 mb-3"><label for="s-fechaPresentacion" class="form-label">Fecha</label><input type="date" class="form-control" id="s-fechaPresentacion" required><div class="invalid-feedback"></div></div>
+              <div class="col-md-3 mb-3"><label for="s-horaPresentacion" class="form-label">Hora</label><input type="time" class="form-control" id="s-horaPresentacion"></div>
+              <div class="col-12 mb-3"><label for="s-ubicacionCarga" class="form-label">Ubicación de carga</label><input type="text" class="form-control" id="s-ubicacionCarga" required><div class="invalid-feedback"></div></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-primary" data-cerrar-modal="modal-solicitud">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check2 me-1"></i>Guardar solicitud</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/datos.js"></script>
+  <script src="../../js/validaciones.js"></script>
+  <script src="../../js/render.js"></script>
+  <script src="../../js/modal.js"></script>
+  <script src="../../js/entidades.js"></script>
+  <script src="../../js/pagina-generica.js"></script>
+  <script src="../../js/layout.js"></script>
+</body>
+</html>
