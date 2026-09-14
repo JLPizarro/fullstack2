@@ -81,6 +81,13 @@ function montoPositivo(valor, max) {
   return true;
 }
 
+/** Número entre `min` y `max` (inclusive), a diferencia de montoPositivo acepta 0. Vacío se considera válido (campo opcional). */
+function numeroEntreOVacio(valor, min, max) {
+  if (!campoRequerido(valor)) return true;
+  const numero = Number(valor);
+  return !Number.isNaN(numero) && numero >= min && numero <= max;
+}
+
 /**
  * Aplica el estado visual (Bootstrap .is-valid / .is-invalid) y escribe el
  * mensaje personalizado en el <div> de feedback asociado al campo.

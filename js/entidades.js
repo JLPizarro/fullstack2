@@ -292,6 +292,7 @@ function iniciarFormularioRampla(idExistente) {
   Object.values(campos).forEach((input) => input.type !== "checkbox" && limpiarValidacion(input));
 
   const ANIO_ACTUAL = new Date().getFullYear();
+  const PATENTE_RAMPLA_REGEX = /^[A-Z]{2}-\d{4}$/;
   const ramplas = obtenerRamplas();
   const existente = idExistente ? ramplas.find((r) => r.id === idExistente) : null;
 
@@ -310,8 +311,9 @@ function iniciarFormularioRampla(idExistente) {
 
   function validarTodo() {
     let ok = true;
-    if (!campoRequerido(campos.patente.value)) {
-      marcarCampo(campos.patente, false, "La patente es obligatoria.");
+    const patenteLimpia = campos.patente.value.toUpperCase().replace(/[^A-Z0-9-]/g, "");
+    if (!campoRequerido(patenteLimpia) || !PATENTE_RAMPLA_REGEX.test(patenteLimpia)) {
+      marcarCampo(campos.patente, false, "Formato inválido. Ej: RA-4471.");
       ok = false;
     } else marcarCampo(campos.patente, true);
     if (!campoRequerido(campos.codigo.value)) {
@@ -351,7 +353,7 @@ function iniciarFormularioRampla(idExistente) {
     }
     const datos = {
       id: existente ? existente.id : siguienteId(ramplas),
-      patente: campos.patente.value.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+      patente: campos.patente.value.toUpperCase().replace(/[^A-Z0-9-]/g, ""),
       codigo: campos.codigo.value.trim().toUpperCase(),
       anio: Number(campos.anio.value),
       ejes: Number(campos.ejes.value),
@@ -558,6 +560,11 @@ function iniciarFormularioEmpleado(idExistente) {
       marcar(campos.licenciaConducirVencimiento, campoRequerido(campos.licenciaConducirVencimiento.value), "Obligatoria para Conductor.");
       marcar(campos.tarjetaRendicionBanco, campoRequerido(campos.tarjetaRendicionBanco.value), "Selecciona un banco.");
       marcar(campos.tarjetaRendicionTipoCuenta, campoRequerido(campos.tarjetaRendicionTipoCuenta.value), "Selecciona un tipo.");
+      if (campoRequerido(campos.tarjetaRendicionEmail.value)) {
+        marcar(campos.tarjetaRendicionEmail, esCorreoValido(campos.tarjetaRendicionEmail.value), "Correo inválido.");
+      } else {
+        limpiarValidacion(campos.tarjetaRendicionEmail);
+      }
     }
     return ok;
   }
@@ -898,7 +905,7 @@ function iniciarFormularioCliente(idExistente) {
       id: existente ? existente.id : siguienteId(clientes),
       nombre: campos.nombre.value.trim(),
       abreviacion: campos.abreviacion.value.trim().toUpperCase(),
-      rut: campos.rut.value.trim(),
+      rut: campos.rut.value.toUpperCase().replace(/\./g, "").trim(),
       categorias,
       turnos: existente ? existente.turnos : [],
     };
@@ -1020,7 +1027,7 @@ function iniciarFormularioContrato(cliente, idExistente) {
       marcarCampo(campos.nombre, false, "Obligatorio.");
       ok = false;
     } else marcarCampo(campos.nombre, true);
-    if (!campos.fechaInicio.value || !campos.fechaTermino.value || campos.fechaTermino.value < campos.fechaInicio.value) {
+    if (!campoRequerido(campos.fechaInicio.value) || !campoRequerido(campos.fechaTermino.value) || !fechaMayorOIgual(campos.fechaInicio.value, campos.fechaTermino.value)) {
       marcarCampo(campos.fechaTermino, false, "Debe ser igual o posterior al inicio.");
       ok = false;
     } else marcarCampo(campos.fechaTermino, true);
@@ -1330,6 +1337,10 @@ function iniciarFormularioSolicitud(cliente) {
       marcarCampo(campos.ubicacionCarga, false, "Obligatoria.");
       ok = false;
     } else marcarCampo(campos.ubicacionCarga, true);
+    if (!numeroEntreOVacio(campos.tonelajeRequerido.value, 0, 200)) {
+      marcarCampo(campos.tonelajeRequerido, false, "Debe estar entre 0 y 200.");
+      ok = false;
+    } else marcarCampo(campos.tonelajeRequerido, true);
     if (!ok) {
       formulario.classList.add("was-validated");
       return;
@@ -1706,6 +1717,7 @@ function iniciarFormularioViaje(idExistente, solicitudId) {
     marcar(campos.numeroContacto, esTelefonoChilenoValido(campos.numeroContacto.value), "Formato: +56 9 XXXX XXXX.");
     marcar(campos.fechaPresentacion, campoRequerido(campos.fechaPresentacion.value), "Obligatoria.");
     marcar(campos.ubicacionCarga, campoRequerido(campos.ubicacionCarga.value), "Obligatoria.");
+    marcar(campos.tonelajeRequerido, numeroEntreOVacio(campos.tonelajeRequerido.value, 0, 200), "Debe estar entre 0 y 200.");
     if (!ok) {
       formulario.classList.add("was-validated");
       return;
@@ -1859,22 +1871,42 @@ function pintarTabGastosViaje(viaje) {
           <option value="" selected disabled>Categoría</option>
           ${CATEGORIAS_GASTO.map((c) => `<option value="${c}">${c}</option>`).join("")}
         </select>
+        <div class="invalid-feedback"></div>
       </div>
-      <div class="col-sm-2"><input type="number" min="0" class="form-control form-control-sm" id="gasto-monto" placeholder="Monto" required></div>
-      <div class="col-sm-2"><input type="date" class="form-control form-control-sm" id="gasto-fecha" required></div>
-      <div class="col-sm-3"><input type="text" class="form-control form-control-sm" id="gasto-proveedor" placeholder="Proveedor" required></div>
+      <div class="col-sm-2"><input type="number" min="0" class="form-control form-control-sm" id="gasto-monto" placeholder="Monto" required><div class="invalid-feedback"></div></div>
+      <div class="col-sm-2"><input type="date" class="form-control form-control-sm" id="gasto-fecha" required><div class="invalid-feedback"></div></div>
+      <div class="col-sm-3"><input type="text" class="form-control form-control-sm" id="gasto-proveedor" placeholder="Proveedor" required><div class="invalid-feedback"></div></div>
       <div class="col-sm-2"><button type="submit" class="btn btn-primary btn-sm w-100">Registrar</button></div>
-      <div class="col-12"><input type="text" class="form-control form-control-sm" id="gasto-descripcion" placeholder="Descripción" required></div>
+      <div class="col-12"><input type="text" class="form-control form-control-sm" id="gasto-descripcion" placeholder="Descripción" required><div class="invalid-feedback"></div></div>
     </form>`;
 
   cuerpo.querySelector("#form-registrar-gasto").addEventListener("submit", (evento) => {
     evento.preventDefault();
-    const categoria = document.getElementById("gasto-categoria").value;
-    const monto = Number(document.getElementById("gasto-monto").value);
-    const fecha = document.getElementById("gasto-fecha").value;
-    const proveedor = document.getElementById("gasto-proveedor").value.trim();
-    const descripcion = document.getElementById("gasto-descripcion").value.trim();
-    if (!categoria || !montoPositivo(monto, 999999999999) || !fecha || !proveedor || !descripcion) return;
+    const campoCategoria = document.getElementById("gasto-categoria");
+    const campoMonto = document.getElementById("gasto-monto");
+    const campoFecha = document.getElementById("gasto-fecha");
+    const campoProveedor = document.getElementById("gasto-proveedor");
+    const campoDescripcion = document.getElementById("gasto-descripcion");
+
+    let ok = true;
+    const marcar = (campo, cond, msj) => {
+      if (!cond) {
+        marcarCampo(campo, false, msj);
+        ok = false;
+      } else marcarCampo(campo, true);
+    };
+    marcar(campoCategoria, campoRequerido(campoCategoria.value), "Selecciona una categoría.");
+    marcar(campoMonto, montoPositivo(campoMonto.value, 999999999999), "Ingresa un monto mayor a 0.");
+    marcar(campoFecha, campoRequerido(campoFecha.value), "Obligatoria.");
+    marcar(campoProveedor, campoRequerido(campoProveedor.value), "Obligatorio.");
+    marcar(campoDescripcion, campoRequerido(campoDescripcion.value), "Obligatoria.");
+    if (!ok) return;
+
+    const categoria = campoCategoria.value;
+    const monto = Number(campoMonto.value);
+    const fecha = campoFecha.value;
+    const proveedor = campoProveedor.value.trim();
+    const descripcion = campoDescripcion.value.trim();
     const gastosActuales = obtenerGastos();
     const nuevo = { id: siguienteId(gastosActuales), viajeId: viaje.id, categoria, monto, fecha, proveedor, descripcion, tramo: "" };
     guardarGastos([...gastosActuales, nuevo]);
@@ -1903,16 +1935,29 @@ function pintarTabTransferenciasViaje(viaje) {
       </tbody>
     </table>
     <form id="form-solicitud-adicional" class="row g-2" novalidate>
-      <div class="col-sm-4"><input type="number" min="0" class="form-control form-control-sm" id="transferencia-monto" placeholder="Monto" required></div>
-      <div class="col-sm-6"><input type="text" class="form-control form-control-sm" id="transferencia-motivo" placeholder="Motivo (ej: imprevisto en ruta)" required></div>
+      <div class="col-sm-4"><input type="number" min="0" class="form-control form-control-sm" id="transferencia-monto" placeholder="Monto" required><div class="invalid-feedback"></div></div>
+      <div class="col-sm-6"><input type="text" class="form-control form-control-sm" id="transferencia-motivo" placeholder="Motivo (ej: imprevisto en ruta)" required><div class="invalid-feedback"></div></div>
       <div class="col-sm-2"><button type="submit" class="btn btn-primary btn-sm w-100">Generar</button></div>
     </form>`;
 
   cuerpo.querySelector("#form-solicitud-adicional").addEventListener("submit", (evento) => {
     evento.preventDefault();
-    const monto = Number(document.getElementById("transferencia-monto").value);
-    const motivo = document.getElementById("transferencia-motivo").value.trim();
-    if (!montoPositivo(monto, 999999999999) || !motivo) return;
+    const campoMonto = document.getElementById("transferencia-monto");
+    const campoMotivo = document.getElementById("transferencia-motivo");
+
+    let ok = true;
+    const marcar = (campo, cond, msj) => {
+      if (!cond) {
+        marcarCampo(campo, false, msj);
+        ok = false;
+      } else marcarCampo(campo, true);
+    };
+    marcar(campoMonto, montoPositivo(campoMonto.value, 999999999999), "Ingresa un monto mayor a 0.");
+    marcar(campoMotivo, campoRequerido(campoMotivo.value), "Obligatorio.");
+    if (!ok) return;
+
+    const monto = Number(campoMonto.value);
+    const motivo = campoMotivo.value.trim();
     const actuales = obtenerSolicitudesTransferencia();
     const nueva = {
       id: siguienteId(actuales),
@@ -2097,7 +2142,7 @@ PAGINAS.puntosReferencia = function () {
 
 function filaUsuario(u) {
   return `
-    <tr data-abrir-modal="modal-usuario" data-id="${u.id}" style="cursor:pointer;">
+    <tr data-id="${u.id}" style="cursor:pointer;">
       <td class="mono">${u.run}</td>
       <td>${u.nombre} ${u.apellidos}</td>
       <td>${u.correo}</td>

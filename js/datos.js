@@ -366,9 +366,7 @@ const guardarSolicitudesTransferencia = almacenSolicitudesTransferencia.guardar;
 const MODULOS_SISTEMA = ["mantencion", "relaciones_laborales", "facturacion", "operaciones", "seguridad"];
 
 const USUARIOS_SEED = [
-  { id: 1, run: "190110223", nombre: "Ignacia", apellidos: "Soto Muñoz", correo: "ignacia.soto@duoc.cl", rol: "Administrador", region: "Metropolitana de Santiago", comuna: "Santiago", permisos: [] },
-  { id: 2, run: "152309878", nombre: "Marcelo", apellidos: "Reyes Pino", correo: "marcelo.reyes@gmail.com", rol: "Operador", region: "Valparaíso", comuna: "Valparaíso", permisos: [{ modulo: "operaciones", nivel: "total" }, { modulo: "mantencion", nivel: "lectura" }] },
-  { id: 3, run: "178234561", nombre: "Ana", apellidos: "Contreras Díaz", correo: "ana.contreras@profesor.duoc.cl", rol: "Operador", region: "Biobío", comuna: "Concepción", permisos: [{ modulo: "relaciones_laborales", nivel: "total" }] },
+  { id: 1, run: "190110223", nombre: "Administrador", apellidos: "", correo: "administrador@duoc.cl", rol: "Administrador", region: "Metropolitana de Santiago", comuna: "Santiago", permisos: [] },
 ];
 const almacenUsuarios = crearAlmacen("csat_usuarios", USUARIOS_SEED);
 const obtenerUsuarios = almacenUsuarios.obtener;

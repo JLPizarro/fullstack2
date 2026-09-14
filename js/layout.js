@@ -104,10 +104,10 @@ function topbarHTML(tituloPagina) {
       <span class="page-title">${tituloPagina}</span>
     </div>
     <div class="user-chip">
-      <img src="${baseSitio()}assets/img/avatar.svg" alt="Avatar de Ignacia Soto">
+      <img src="${baseSitio()}assets/img/avatar.svg" alt="Avatar de Administrador">
       <div class="d-none d-sm-block">
-        <div class="fw-semibold small">Ignacia Soto</div>
-        <div class="text-muted-brand" style="font-size:.75rem;">Administradora</div>
+        <div class="fw-semibold small">Administrador</div>
+        <div class="text-muted-brand" style="font-size:.75rem;">Administrador</div>
       </div>
     </div>`;
 }

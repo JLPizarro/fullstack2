@@ -74,8 +74,8 @@
                 <select class="form-select" id="u-rol" required><option value="" selected disabled>Selecciona un rol</option><option value="Administrador">Administrador</option><option value="Operador">Operador</option></select>
                 <div class="invalid-feedback"></div>
               </div>
-              <div class="col-md-4 mb-3"><label for="u-password" class="form-label">Contraseña</label><input type="password" class="form-control" id="u-password"><div class="invalid-feedback"></div><div class="form-hint mt-1" id="u-pista-password">Entre 6 y 20 caracteres.</div></div>
-              <div class="col-md-4 mb-3"><label for="u-password2" class="form-label">Confirmar contraseña</label><input type="password" class="form-control" id="u-password2"><div class="invalid-feedback"></div></div>
+              <div class="col-md-4 mb-3"><label for="u-password" class="form-label">Contraseña</label><input type="password" class="form-control" id="u-password" minlength="6" maxlength="20"><div class="invalid-feedback"></div><div class="form-hint mt-1" id="u-pista-password">Entre 6 y 20 caracteres.</div></div>
+              <div class="col-md-4 mb-3"><label for="u-password2" class="form-label">Confirmar contraseña</label><input type="password" class="form-control" id="u-password2" minlength="6" maxlength="20"><div class="invalid-feedback"></div></div>
             </div>
 
             <div id="u-seccion-permisos" class="conditional-section mb-1 d-none">
